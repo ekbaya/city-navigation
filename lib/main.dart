@@ -1,11 +1,20 @@
-import 'package:city_navigation/pages/welcome.dart';
+import 'package:city_navigation/controllers/navigationController.dart';
+import 'package:city_navigation/pages/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'constants/AppStyle.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => NavigationController()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -26,7 +35,7 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: const WelcomePage(),
+      home: const LoadingPage(),
     );
   }
 }

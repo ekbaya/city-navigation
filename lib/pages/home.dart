@@ -7,6 +7,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'routes.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -48,10 +50,10 @@ class _HomePageState extends State<HomePage> {
           anchor: const Offset(0.5, 0.5),
           draggable: false,
           flat: true,
-          rotation: position.heading,
           infoWindow: const InfoWindow(
               title: "Home Address", snippet: "Your Current Location"),
-          icon: locationPin),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)),
     );
 
     setState(() {});
@@ -77,7 +79,14 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Routes()),
+                );
+              },
+              icon: const Icon(Icons.search)),
           const SizedBox(
             width: 10,
           ),
