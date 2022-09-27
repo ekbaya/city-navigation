@@ -1,6 +1,7 @@
 import 'package:city_navigation/controllers/navigationController.dart';
 import 'package:city_navigation/pages/loading.dart';
 import 'package:city_navigation/pages/welcome.dart';
+import 'package:city_navigation/providers/AppData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +13,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => NavigationController()),
+        ChangeNotifierProvider(create: (context) => AppData()),
       ],
       child: const MyApp(),
     ),

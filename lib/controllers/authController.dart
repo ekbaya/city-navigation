@@ -1,13 +1,14 @@
 import 'dart:convert';
 
-import 'package:city_navigation/models/AccountResponse.dart';
-import 'package:city_navigation/models/LoginDTO.dart';
-import 'package:city_navigation/models/LoginResponse.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:city_navigation/constants/AppConfig.dart';
+import 'package:city_navigation/models/AccountResponse.dart';
+import 'package:city_navigation/models/LoginDTO.dart';
+import 'package:city_navigation/models/LoginResponse.dart';
 import 'package:city_navigation/models/RegistrationResponse.dart';
 import 'package:city_navigation/models/UserDTO.dart';
+import 'package:city_navigation/utilities/sessionData.dart';
 
 class AuthController {
   static Future<RegistrationResponse> registerUser(UserDTO userDTO) async {
@@ -17,7 +18,7 @@ class AuthController {
         'Accept': 'Application/json',
         'Content-Type': 'Application/json'
       },
-      body: userDTO.toMap(),
+      body: jsonEncode(userDTO.toMap()),
     );
 
     var convertDataToJson = jsonDecode(result.body);
@@ -31,7 +32,7 @@ class AuthController {
         'Accept': 'Application/json',
         'Content-Type': 'Application/json'
       },
-      body: loginDTO.toMap(),
+      body: jsonEncode(loginDTO.toMap()),
     );
 
     var convertDataToJson = jsonDecode(result.body);
@@ -44,7 +45,7 @@ class AuthController {
       headers: {
         'Accept': 'Application/json',
         'Content-Type': 'Application/json',
-        'Authorization': 'Bearer ' + "some token"
+        'Authorization': 'Bearer ${await SessionManager.getCurrentUserToken()}'
       },
     );
 

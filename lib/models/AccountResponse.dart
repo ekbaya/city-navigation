@@ -42,7 +42,7 @@ class AccountResponse {
     return AccountResponse(
       message: map['message'] ?? '',
       status: map['status'] ?? '',
-      success: map['success'] ?? false,
+      success: map['sucess'] ?? false,
       user: User.fromMap(map['user'] as Map<String, dynamic>),
     );
   }

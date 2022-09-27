@@ -1,5 +1,10 @@
+import 'package:city_navigation/controllers/authController.dart';
+import 'package:city_navigation/models/LoginDTO.dart';
+import 'package:city_navigation/models/LoginResponse.dart';
 import 'package:city_navigation/pages/home.dart';
+import 'package:city_navigation/utilities/toastDialog.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/AppStyle.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,6 +16,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool hidePassword = true;
+  bool loading = false;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   @override
@@ -93,12 +99,40 @@ class _LoginPageState extends State<LoginPage> {
                         height: 30,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HomePage()),
-                          );
+                        onTap: () async {
+                          if (validateData()) {
+                            setState(() {
+                              loading = true;
+                            });
+                            LoginDTO loginDTO = LoginDTO(
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim());
+
+                            final LoginResponse loginResponse =
+                                await AuthController.loginUser(loginDTO);
+
+                            setState(() {
+                              loading = false;
+                            });
+
+                            if (loginResponse.success) {
+                              //store the token
+                              SharedPreferences prefes =
+                                  await SharedPreferences.getInstance();
+                              prefes.setString("token", loginResponse.token);
+                              ToastDialogue()
+                                  .showToast(loginResponse.message, 0);
+                              // ignore: use_build_context_synchronously
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomePage()),
+                              );
+                            } else {
+                              ToastDialogue()
+                                  .showToast(loginResponse.message, 1);
+                            }
+                          }
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width,
@@ -106,13 +140,17 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: BoxDecoration(
                               color: AppStyle.primaryColor,
                               borderRadius: BorderRadius.circular(5)),
-                          child: const Center(
-                            child: Text(
-                              "SIGN IN",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                          child: Center(
+                            child: loading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.yellow,
+                                  )
+                                : const Text(
+                                    "SIGN IN",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                           ),
                         ),
                       ),
@@ -131,5 +169,17 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  bool validateData() {
+    if (emailController.text.isEmpty) {
+      ToastDialogue().showToast("Email is required", 1);
+      return false;
+    } else if (passwordController.text.isEmpty) {
+      ToastDialogue().showToast("Password is required", 1);
+      return false;
+    } else {
+      return true;
+    }
   }
 }

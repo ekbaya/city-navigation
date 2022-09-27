@@ -1,12 +1,18 @@
 import 'dart:async';
 
+import 'package:city_navigation/controllers/authController.dart';
+import 'package:city_navigation/models/AccountResponse.dart';
+import 'package:city_navigation/models/user.dart';
+import 'package:city_navigation/utilities/toastDialog.dart';
 import 'package:city_navigation/widgets/mainDrawer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/AppData.dart';
 import 'routes.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,6 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Completer<GoogleMapController> controllerGoogleMap = Completer();
+  late AppData appData;
   late GoogleMapController newGoogleMapController;
   // ignore: unnecessary_const
   static const CameraPosition kenya = const CameraPosition(
@@ -35,8 +42,20 @@ class _HomePageState extends State<HomePage> {
   late BitmapDescriptor locationPin;
   @override
   void initState() {
+    appData = Provider.of<AppData>(context, listen: false);
+    fetchCurrentUser();
     Geolocator.getPositionStream().listen(userCurrentLocationUpdate);
     super.initState();
+  }
+
+  fetchCurrentUser() async {
+    final AccountResponse accountResponse =
+        await AuthController.getCurrentUser();
+    if (accountResponse.success) {
+      appData.setUser(accountResponse.user);
+    } else {
+      ToastDialogue().showToast(accountResponse.message, 1);
+    }
   }
 
   userCurrentLocationUpdate(Position position) {

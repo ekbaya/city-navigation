@@ -1,9 +1,12 @@
 import 'package:city_navigation/pages/bus_stops.dart';
+import 'package:city_navigation/providers/AppData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../pages/home.dart';
 
 Drawer mainDrawer(BuildContext context) {
+  AppData appState = Provider.of<AppData>(context);
   return Drawer(
     backgroundColor: Colors.white,
     child: ListView(
@@ -30,12 +33,13 @@ Drawer mainDrawer(BuildContext context) {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    "Owira",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    appState.userInitialised ? appState.user.name : "",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                  Text("254769728089"),
+                  Text(appState.userInitialised ? appState.user.phone : ""),
                 ],
               ),
               const SizedBox(

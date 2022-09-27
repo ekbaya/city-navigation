@@ -1,4 +1,9 @@
 import 'package:city_navigation/constants/AppStyle.dart';
+import 'package:city_navigation/controllers/authController.dart';
+import 'package:city_navigation/models/RegistrationResponse.dart';
+import 'package:city_navigation/models/UserDTO.dart';
+import 'package:city_navigation/pages/login.dart';
+import 'package:city_navigation/utilities/toastDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +19,7 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   bool checkedValue = false;
   bool hidePassword = true;
+  bool loading = false;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -67,7 +73,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    "Clients will be using these details to identify you",
+                    "Support will be using these details to identify you",
                     style: TextStyle(fontSize: 13),
                   ),
                 ),
@@ -87,7 +93,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             border: OutlineInputBorder()),
                       ),
-                      
                       const SizedBox(
                         height: 20,
                       ),
@@ -114,7 +119,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             border: OutlineInputBorder()),
                       ),
-                     
                       const SizedBox(
                         height: 20,
                       ),
@@ -171,12 +175,35 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomePage(),
-                            ),
-                          );
+                          if (validateData()) {
+                            setState(() {
+                              loading = true;
+                            });
+                            UserDTO userDTO = UserDTO(
+                                name: nameController.text.trim(),
+                                email: emailController.text.trim(),
+                                phone: phoneController.text.trim(),
+                                password: passwordController.text.trim());
+
+                            final RegistrationResponse response =
+                                await AuthController.registerUser(userDTO);
+                            setState(() {
+                              loading = false;
+                            });
+
+                            if (response.success == "true") {
+                              ToastDialogue().showToast(response.message, 0);
+                              // ignore: use_build_context_synchronously
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage(),
+                                ),
+                              );
+                            } else {
+                              ToastDialogue().showToast(response.message, 1);
+                            }
+                          }
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width,
@@ -184,13 +211,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           decoration: BoxDecoration(
                               color: AppStyle.primaryColor,
                               borderRadius: BorderRadius.circular(5)),
-                          child: const Center(
-                            child: Text(
-                              "SIGN UP",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                          child: Center(
+                            child: loading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.yellow,
+                                  )
+                                : const Text(
+                                    "SIGN UP",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                           ),
                         ),
                       ),
@@ -208,31 +239,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-  // bool validateData() {
-  //   if (nameController.text.isEmpty) {
-  //     ToastDialogue().showToast("Name is required", 1);
-  //     return false;
-  //   } else if (idNumberController.text.isEmpty) {
-  //     ToastDialogue().showToast("ID number is required", 1);
-  //     return false;
-  //   } else if (emailController.text.isEmpty) {
-  //     ToastDialogue().showToast("Email is required", 1);
-  //     return false;
-  //   } else if (phoneController.text.isEmpty) {
-  //     ToastDialogue().showToast("Phone number is required", 1);
-  //     return false;
-  //   } else if (plateController.text.isEmpty) {
-  //     ToastDialogue().showToast("Bike Plate number is required", 1);
-  //     return false;
-  //   } else if (passwordController.text.isEmpty) {
-  //     ToastDialogue().showToast("Password is required", 1);
-  //     return false;
-  //   } else if (!checkedValue) {
-  //     ToastDialogue()
-  //         .showToast("Please accept terms and conditions before continuing", 1);
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }
+  bool validateData() {
+    if (nameController.text.isEmpty) {
+      ToastDialogue().showToast("Name is required", 1);
+      return false;
+    } else if (emailController.text.isEmpty) {
+      ToastDialogue().showToast("Email is required", 1);
+      return false;
+    } else if (phoneController.text.isEmpty) {
+      ToastDialogue().showToast("Phone number is required", 1);
+      return false;
+    } else if (passwordController.text.isEmpty) {
+      ToastDialogue().showToast("Password is required", 1);
+      return false;
+    } else if (!checkedValue) {
+      ToastDialogue()
+          .showToast("Please accept terms and conditions before continuing", 1);
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
