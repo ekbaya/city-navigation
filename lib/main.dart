@@ -1,7 +1,9 @@
 import 'package:city_navigation/controllers/navigationController.dart';
+import 'package:city_navigation/pages/home.dart';
 import 'package:city_navigation/pages/loading.dart';
 import 'package:city_navigation/pages/welcome.dart';
 import 'package:city_navigation/providers/AppData.dart';
+import 'package:city_navigation/utilities/sessionData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,9 +22,28 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  bool tokenAvailable = false;
+  @override
+  void initState() {
+    checkToken();
+    super.initState();
+  }
+
+  checkToken() async {
+    final token = await SessionManager.getCurrentUserToken();
+    tokenAvailable = token!.isNotEmpty;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -38,7 +59,7 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: const WelcomePage(),
+      home: tokenAvailable ? const HomePage() : const WelcomePage(),
     );
   }
 }
