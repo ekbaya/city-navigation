@@ -1,65 +1,78 @@
 import 'package:city_navigation/controllers/navigationController.dart';
+import 'package:city_navigation/models/Trip.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-class Routes extends StatelessWidget {
+class Routes extends StatefulWidget {
   const Routes({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    NavigationController navigationController =
-        Provider.of<NavigationController>(context);
+  State<Routes> createState() => _RoutesState();
+}
 
+class _RoutesState extends State<Routes> {
+  static const _pageSize = 20;
+  int page = 0;
+
+  final PagingController<int, Trip> _pagingController =
+      PagingController(firstPageKey: 1);
+
+  final NavigationController navigationController = NavigationController();
+
+  @override
+  void initState() {
+    _pagingController.addPageRequestListener((pageKey) {
+      page = page + 1;
+      _fetchPage(page);
+    });
+    super.initState();
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    print("Called with page $pageKey");
+    try {
+      final newItems =
+          await navigationController.getPaginatedTrips(pageKey, _pageSize);
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text(
-          'Search Page',
+          "Routes",
           style: TextStyle(color: Colors.black),
         ),
-        backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: ListView.builder(
-        itemCount: navigationController.trips.length,
-        itemBuilder: (context, index) {
-          final trip = navigationController.trips[index];
-
-          return ListTile(
-            title: Text(trip.route.description),
-            subtitle: Text(trip.route.short_name.toString()),
+      body: PagedListView<int, Trip>(
+        pagingController: _pagingController,
+        builderDelegate: PagedChildBuilderDelegate<Trip>(
+          itemBuilder: (context, item, index) => ListTile(
+            title: Text(item.route.description),
+            subtitle: Text(item.trip_id),
             trailing: const Icon(Icons.arrow_forward_ios),
-          );
-        },
+          ),
+        ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   tooltip: 'Search routes',
-      //   onPressed: () => showSearch(
-      //     context: context,
-      //     delegate: SearchPage(
-      //       onQueryUpdate: print,
-      //       items: navigationController.trips,
-      //       searchLabel: 'Search routes',
-      //       suggestion: const Center(
-      //         child: Text('Filter routes by name, short nsme or by trip name'),
-      //       ),
-      //       failure: const Center(
-      //         child: Text('No route found :('),
-      //       ),
-      //       filter: (trip) => [
-      //         trip!.route.description,
-      //         trip.route.short_name.toString(),
-      //       ],
-      //       sort: (a, b) => a!.compareTo(b),
-      //       builder: (trip) => ListTile(
-      //         title: Text(trip!.route.description),
-      //         subtitle: Text(trip.route.short_name.toString()),
-      //         trailing: const Icon(Icons.arrow_forward_ios),
-      //       ),
-      //     ),
-      //   ),
-      //   child: const Icon(Icons.search),
-      // ),
     );
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
   }
 }
