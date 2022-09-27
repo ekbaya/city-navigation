@@ -1,5 +1,6 @@
 import 'package:city_navigation/controllers/navigationController.dart';
 import 'package:city_navigation/pages/loading.dart';
+import 'package:city_navigation/pages/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: const LoadingPage(),
+      home: const WelcomePage(),
     );
   }
 }

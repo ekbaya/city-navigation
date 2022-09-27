@@ -1,3 +1,4 @@
+import 'package:city_navigation/pages/bus_stops.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../pages/home.dart';
@@ -72,12 +73,12 @@ Drawer mainDrawer(BuildContext context) {
         ),
         GestureDetector(
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const DeliveriesPage(),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BusStopsPage(),
+              ),
+            );
           },
           child: const ListTile(
             leading: Icon(
@@ -85,29 +86,7 @@ Drawer mainDrawer(BuildContext context) {
               color: Colors.indigo,
             ),
             title: Text(
-              "stages",
-              style: TextStyle(
-                fontSize: 13.0,
-              ),
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const Dashboard(),
-            //   ),
-            // );
-          },
-          child: const ListTile(
-            leading: Icon(
-              Icons.dashboard_outlined,
-              color: Colors.indigo,
-            ),
-            title: Text(
-              "Summary",
+              "Bus stops",
               style: TextStyle(
                 fontSize: 13.0,
               ),
@@ -163,11 +142,11 @@ Drawer mainDrawer(BuildContext context) {
           },
           child: const ListTile(
             leading: Icon(
-              CupertinoIcons.settings,
+              Icons.share,
               color: Colors.indigo,
             ),
             title: Text(
-              "Settings",
+              "Share",
               style: TextStyle(
                 fontSize: 13.0,
               ),

@@ -41,6 +41,7 @@ dependencies:
   lottie: ^1.4.3
   infinite_scroll_pagination: ^3.2.0
   provider: ^6.0.3
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:
