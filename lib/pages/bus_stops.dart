@@ -71,7 +71,7 @@ class _BusStopsPageState extends State<BusStopsPage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DirectionsPage(
-                      name: item.stop_id,
+                      name: item.stop_name,
                       lat: item.stop_lat,
                       long: item.stop_lon,
                     ),

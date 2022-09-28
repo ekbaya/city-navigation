@@ -9,7 +9,7 @@ class ProgressDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.indigo,
+      backgroundColor: Colors.amber,
       child: Container(
         margin: const EdgeInsets.all(15),
         width: double.infinity,
@@ -25,7 +25,7 @@ class ProgressDialog extends StatelessWidget {
                 width: 6.0,
               ),
               const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow),
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.indigo),
               ),
               const SizedBox(
                 width: 26.0,
