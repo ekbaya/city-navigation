@@ -6,3 +6,5 @@ const String stopsPagesUrl = "$baseUrl/navigation/stops-pages";
 const String loginUrl = "$baseUrl/user/login";
 const String registerUrl = "$baseUrl/user/register";
 const String accountUrl = "$baseUrl/user/account";
+
+String mapKey = "AIzaSyBGORjYyKEgXaFYcxzx1482WLlsVGHo9x0";

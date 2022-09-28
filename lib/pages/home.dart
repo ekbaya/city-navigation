@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:city_navigation/controllers/authController.dart';
 import 'package:city_navigation/models/AccountResponse.dart';
 import 'package:city_navigation/models/user.dart';
+import 'package:city_navigation/pages/bus_stops.dart';
 import 'package:city_navigation/utilities/toastDialog.dart';
 import 'package:city_navigation/widgets/mainDrawer.dart';
 import 'package:flutter/foundation.dart';
@@ -97,19 +98,6 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(color: Colors.black),
           ),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Routes()),
-                );
-              },
-              icon: const Icon(Icons.search)),
-          const SizedBox(
-            width: 10,
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(5),
           child: Container(
@@ -133,6 +121,44 @@ class _HomePageState extends State<HomePage> {
           newGoogleMapController = controler;
           locatePosition();
         },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.route),
+            label: 'Routes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.location_on),
+            label: 'Bus stops',
+          ),
+        ],
+        onTap: ((value) {
+          if (value == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          }
+          if (value == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Routes()),
+            );
+          }
+          if (value == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BusStopsPage()),
+            );
+          }
+        }),
       ),
     );
   }

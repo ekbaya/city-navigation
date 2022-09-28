@@ -1,6 +1,7 @@
 import 'package:city_navigation/controllers/navigationController.dart';
 import 'package:city_navigation/helpers/Helper.dart';
 import 'package:city_navigation/models/Trip.dart';
+import 'package:city_navigation/pages/directions.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
@@ -68,8 +69,16 @@ class _RoutesState extends State<Routes> {
             subtitle: Text(item.trip_id),
             trailing: IconButton(
                 onPressed: () {
-                  Helper.openMap(double.parse(item.shape.shape_pt_lat),
-                      double.parse(item.shape.shape_pt_lon));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DirectionsPage(
+                        name: item.route.long_name,
+                        lat: item.shape.shape_pt_lat,
+                        long: item.shape.shape_pt_lon,
+                      ),
+                    ),
+                  );
                 },
                 icon: const Icon(
                   Icons.directions,

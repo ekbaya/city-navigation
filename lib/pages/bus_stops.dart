@@ -4,6 +4,8 @@ import 'package:city_navigation/models/Stop.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+import 'directions.dart';
+
 class BusStopsPage extends StatefulWidget {
   const BusStopsPage({super.key});
 
@@ -65,8 +67,16 @@ class _BusStopsPageState extends State<BusStopsPage> {
             subtitle: Text(item.stop_id),
             trailing: IconButton(
               onPressed: () {
-                Helper.openMap(
-                    double.parse(item.stop_lat), double.parse(item.stop_lon));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DirectionsPage(
+                      name: item.stop_id,
+                      lat: item.stop_lat,
+                      long: item.stop_lon,
+                    ),
+                  ),
+                );
               },
               icon: const Icon(
                 Icons.directions,
