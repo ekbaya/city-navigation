@@ -1,10 +1,11 @@
 import 'package:city_navigation/controllers/navigationController.dart';
-import 'package:city_navigation/helpers/Helper.dart';
 import 'package:city_navigation/models/Trip.dart';
 import 'package:city_navigation/pages/directions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:flutter_search_bar/flutter_search_bar.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:provider/provider.dart';
 
 class Routes extends StatefulWidget {
   const Routes({super.key});
@@ -14,6 +15,31 @@ class Routes extends StatefulWidget {
 }
 
 class _RoutesState extends State<Routes> {
+  late SearchBar searchBar;
+  _RoutesState() {
+    searchBar = SearchBar(
+        inBar: false,
+        setState: setState,
+        onSubmitted: (keyword) {
+          searchTrips(1, keyword);
+        },
+        buildDefaultAppBar: buildAppBar);
+  }
+
+  AppBar buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "Routes to and from the City",
+        style: TextStyle(color: Colors.black),
+      ),
+      iconTheme: const IconThemeData(color: Colors.black),
+      actions: [
+        searchBar.getSearchAction(context),
+      ],
+    );
+  }
+
   static const _pageSize = 20;
   int page = 0;
 
@@ -32,7 +58,9 @@ class _RoutesState extends State<Routes> {
   }
 
   Future<void> _fetchPage(int pageKey) async {
-    print("Called with page $pageKey");
+    if (kDebugMode) {
+      print("Called with page $pageKey");
+    }
     try {
       final newItems =
           await navigationController.getPaginatedTrips(pageKey, _pageSize);
@@ -48,17 +76,23 @@ class _RoutesState extends State<Routes> {
     }
   }
 
+  Future<void> searchTrips(int pageKey, String keyword) async {
+    try {
+      final newItems =
+          await navigationController.searchTrips(pageKey, _pageSize, keyword);
+
+      _pagingController.refresh();
+      final nextPageKey = pageKey + newItems.length;
+      _pagingController.appendPage(newItems, nextPageKey);
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          "Routes to and from the City",
-          style: TextStyle(color: Colors.black),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      appBar: searchBar.build(context),
       body: PagedListView<int, Trip>(
         pagingController: _pagingController,
         builderDelegate: PagedChildBuilderDelegate<Trip>(

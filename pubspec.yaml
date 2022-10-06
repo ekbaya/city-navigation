@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_polyline_points: ^1.0.0
   share_plus: ^4.5.2
+  flutter_search_bar: ^2.1.0
 
 dev_dependencies:
   flutter_test:

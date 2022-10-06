@@ -2,6 +2,7 @@ import 'package:city_navigation/controllers/navigationController.dart';
 import 'package:city_navigation/helpers/Helper.dart';
 import 'package:city_navigation/models/Stop.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_search_bar/flutter_search_bar.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import 'directions.dart';
@@ -14,6 +15,31 @@ class BusStopsPage extends StatefulWidget {
 }
 
 class _BusStopsPageState extends State<BusStopsPage> {
+  late SearchBar searchBar;
+  _BusStopsPageState() {
+    searchBar = SearchBar(
+        inBar: false,
+        setState: setState,
+        onSubmitted: (keyword) {
+          searchStops(1, keyword);
+        },
+        buildDefaultAppBar: buildAppBar);
+  }
+
+  AppBar buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "Stops To and From Town",
+        style: TextStyle(color: Colors.black),
+      ),
+      iconTheme: const IconThemeData(color: Colors.black),
+      actions: [
+        searchBar.getSearchAction(context),
+      ],
+    );
+  }
+
   static const _pageSize = 20;
   int page = 0;
 
@@ -48,17 +74,23 @@ class _BusStopsPageState extends State<BusStopsPage> {
     }
   }
 
+  Future<void> searchStops(int pageKey, String keyword) async {
+    try {
+      final newItems =
+          await navigationController.searchStops(pageKey, _pageSize, keyword);
+
+      _pagingController.refresh();
+      final nextPageKey = pageKey + newItems.length;
+      _pagingController.appendPage(newItems, nextPageKey);
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          "Stops To and From Town",
-          style: TextStyle(color: Colors.black),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      appBar: searchBar.build(context),
       body: PagedListView<int, Stop>(
         pagingController: _pagingController,
         builderDelegate: PagedChildBuilderDelegate<Stop>(

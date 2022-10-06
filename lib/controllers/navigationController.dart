@@ -86,4 +86,44 @@ class NavigationController with ChangeNotifier {
     final List<Stop> trips = list.map((e) => Stop.fromMap(e)).toList();
     return trips;
   }
+
+  Future<List<Trip>> searchTrips(
+      int pageNumber, int pageSize, String keyword) async {
+    final result = await http.get(
+      Uri.parse(
+          "$searchTripsPagesUrl?keyword=$keyword&limit=$pageSize&page=$pageNumber"),
+      headers: {
+        'Accept': 'Application/json',
+        'Content-Type': 'Application/json'
+      },
+    );
+    var convertDataToJson = jsonDecode(result.body);
+    if (kDebugMode) {
+      print("TRIPS RESPONSE**************$convertDataToJson");
+    }
+
+    List list = convertDataToJson['results'];
+    final List<Trip> trips = list.map((e) => Trip.fromMap(e)).toList();
+    return trips;
+  }
+
+  Future<List<Stop>> searchStops(
+      int pageNumber, int pageSize, String keyword) async {
+    final result = await http.get(
+      Uri.parse(
+          "$searchStopsPagesUrl?keyword=$keyword&limit=$pageSize&page=$pageNumber"),
+      headers: {
+        'Accept': 'Application/json',
+        'Content-Type': 'Application/json'
+      },
+    );
+    var convertDataToJson = jsonDecode(result.body);
+    if (kDebugMode) {
+      print("STOPS RESPONSE**************$convertDataToJson");
+    }
+
+    List list = convertDataToJson['results'];
+    final List<Stop> trips = list.map((e) => Stop.fromMap(e)).toList();
+    return trips;
+  }
 }
