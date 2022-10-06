@@ -1,6 +1,5 @@
 import 'package:city_navigation/controllers/navigationController.dart';
 import 'package:city_navigation/pages/home.dart';
-import 'package:city_navigation/pages/loading.dart';
 import 'package:city_navigation/pages/welcome.dart';
 import 'package:city_navigation/providers/AppData.dart';
 import 'package:city_navigation/utilities/sessionData.dart';

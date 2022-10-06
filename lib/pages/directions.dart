@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:city_navigation/helpers/MainAppAPI.dart';
+import 'package:city_navigation/models/DirectionDetail.dart';
+import 'package:city_navigation/utilities/utility.dart';
 import 'package:city_navigation/widgets/ProgressDialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +42,82 @@ class _DirectionsPageState extends State<DirectionsPage> {
   List<LatLng> pLinesCoordinates = [];
   Set<Polyline> polyLineSet = {};
 
+  late BitmapDescriptor userPin;
+
+  DirectionDetail distanceDurationDetail = DirectionDetail(
+      distanceValue: 0,
+      durationValue: 0,
+      distanceText: "",
+      durationText: "",
+      encodedPoints: "");
+
   @override
   void initState() {
-    // TODO: implement initState
+    setCustomMapPin();
+    Geolocator.getPositionStream().listen(userCurrentLocationUpdate);
     super.initState();
+  }
+
+  setCustomMapPin() async {
+    final Uint8List markerIcon =
+        await getBytesFromAsset('assets/images/user-navigation.png', 300);
+
+    userPin = BitmapDescriptor.fromBytes(markerIcon);
+  }
+
+  userCurrentLocationUpdate(Position updatedPosition) async {
+    LatLng destinationLatLong =
+        LatLng(double.parse(widget.lat), double.parse(widget.long));
+
+    currentPosition = updatedPosition;
+
+    LatLng origin = LatLng(currentPosition.latitude, currentPosition.longitude);
+
+    distanceDurationDetail = await MainAppAPI.obtainPlaceDirectionDetails(
+        origin, destinationLatLong);
+
+    setState(() {});
+    addLocationMarker(origin, distanceDurationDetail.distanceText,
+        distanceDurationDetail.distanceText);
+  }
+
+  addLocationMarker(LatLng position, String duration, String distance) {
+    markersSet.removeWhere(
+        (element) => element.markerId == const MarkerId("currentLocation"));
+    markersSet.add(
+      Marker(
+          markerId: const MarkerId("currentLocation"),
+          position: position,
+          rotation: currentPosition.heading,
+          flat: true,
+          draggable: false,
+          zIndex: 2,
+          anchor: const Offset(0.5, 0.5),
+          infoWindow:
+              InfoWindow(title: "$distance to destination", snippet: duration),
+          icon: userPin),
+    );
+
+    //add Circle
+    circlesSet.removeWhere(
+      (element) => element.circleId == const CircleId("currentLocation"),
+    );
+    Circle currentLocationCircle = Circle(
+      circleId: const CircleId("currentLocation"),
+      fillColor: Colors.blue.withAlpha(70),
+      center: position,
+      radius: 36,
+      strokeWidth: 1,
+      zIndex: 1,
+      strokeColor: Colors.blueAccent,
+    );
+
+    circlesSet.add(currentLocationCircle);
+
+    CameraPosition cameraPosition = CameraPosition(
+        target: position, zoom: 18, tilt: 0, bearing: currentPosition.heading);
+    newGoogleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
   @override
@@ -61,7 +135,7 @@ class _DirectionsPageState extends State<DirectionsPage> {
         mapType: MapType.normal,
         myLocationButtonEnabled: true,
         initialCameraPosition: kenya,
-        myLocationEnabled: true,
+        myLocationEnabled: false,
         zoomGesturesEnabled: true,
         zoomControlsEnabled: false,
         markers: markersSet,
@@ -72,6 +146,31 @@ class _DirectionsPageState extends State<DirectionsPage> {
           newGoogleMapController = controler;
           locatePosition();
         },
+      ),
+      bottomNavigationBar: Container(
+        height: 80,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+                child: Text(
+              "Distance: ${distanceDurationDetail.distanceText}",
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            )),
+            Expanded(
+                child: Text(
+              "Duration: ${distanceDurationDetail.durationText}",
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            ))
+          ],
+        ),
       ),
     );
   }
@@ -93,15 +192,14 @@ class _DirectionsPageState extends State<DirectionsPage> {
       setState(() {
         markersSet.add(
           Marker(
-              markerId: const MarkerId("user"),
+              markerId: const MarkerId("currentLocation"),
               position: LatLng(position.latitude, position.longitude),
               anchor: const Offset(0.5, 0.5),
               draggable: false,
               flat: true,
               infoWindow: const InfoWindow(
                   title: "Home Address", snippet: "Current Location"),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueViolet)),
+              icon: userPin),
         );
       });
 
@@ -128,9 +226,9 @@ class _DirectionsPageState extends State<DirectionsPage> {
 
     var details = await MainAppAPI.obtainPlaceDirectionDetails(
         originLatLng, destinationLatLng);
-    // setState(() {
-    //   tripDirectionDetail = details;
-    // });
+    setState(() {
+      distanceDurationDetail = details;
+    });
     // ignore: use_build_context_synchronously
     Navigator.of(
       context,
@@ -210,8 +308,8 @@ class _DirectionsPageState extends State<DirectionsPage> {
       markersSet.add(dropOffLocationMarker);
     });
 
-    Circle pickUpCircle = Circle(
-      circleId: const CircleId("originId"),
+    Circle currentLocationCircle = Circle(
+      circleId: const CircleId("currentLocation"),
       fillColor: Colors.blueAccent,
       center: originLatLng,
       radius: 12,
@@ -229,7 +327,7 @@ class _DirectionsPageState extends State<DirectionsPage> {
     );
 
     setState(() {
-      circlesSet.add(pickUpCircle);
+      circlesSet.add(currentLocationCircle);
       circlesSet.add(dropOffCircle);
     });
   }
