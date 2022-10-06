@@ -1,9 +1,13 @@
+import 'package:city_navigation/pages/account.dart';
 import 'package:city_navigation/pages/bus_stops.dart';
+import 'package:city_navigation/pages/support.dart';
 import 'package:city_navigation/providers/AppData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../pages/home.dart';
+import '../pages/welcome.dart';
+import 'package:share_plus/share_plus.dart';
 
 Drawer mainDrawer(BuildContext context) {
   AppData appState = Provider.of<AppData>(context);
@@ -99,12 +103,12 @@ Drawer mainDrawer(BuildContext context) {
         ),
         GestureDetector(
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const AccountPage(),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AccountPage(),
+              ),
+            );
           },
           child: const ListTile(
             leading: Icon(Icons.person_outline, color: Colors.indigo),
@@ -118,12 +122,12 @@ Drawer mainDrawer(BuildContext context) {
         ),
         GestureDetector(
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const SupportPage(),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SupportPage(),
+              ),
+            );
           },
           child: const ListTile(
             leading: Icon(Icons.help_outline, color: Colors.indigo),
@@ -137,12 +141,9 @@ Drawer mainDrawer(BuildContext context) {
         ),
         GestureDetector(
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const SettingsPage(),
-            //   ),
-            // );
+            Share.share(
+                'check out this city navigation helper https://example.com',
+                subject: 'City Navigation Helper!');
           },
           child: const ListTile(
             leading: Icon(
@@ -167,7 +168,15 @@ Drawer mainDrawer(BuildContext context) {
               ),
             ),
           ),
-          onTap: () {},
+          onTap: () {
+            Navigator.pushAndRemoveUntil<dynamic>(
+              context,
+              MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => const WelcomePage(),
+              ),
+              (route) => false,
+            );
+          },
         ),
       ],
     ),

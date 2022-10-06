@@ -43,7 +43,9 @@ class AccountResponse {
       message: map['message'] ?? '',
       status: map['status'] ?? '',
       success: map['sucess'] ?? false,
-      user: User.fromMap(map['user'] as Map<String, dynamic>),
+      user: map['user'] == null
+          ? User(name: "", email: "", phone: "", id: "")
+          : User.fromMap(map['user']),
     );
   }
 
