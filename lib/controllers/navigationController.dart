@@ -10,7 +10,6 @@ import 'package:city_navigation/models/Trip.dart';
 
 class NavigationController with ChangeNotifier {
   List<Trip> trips = [];
-  List<Stop> stops = [];
   Future getTrips() async {
     final result = await http.get(
       Uri.parse(tripsUrl),
@@ -25,12 +24,11 @@ class NavigationController with ChangeNotifier {
     }
 
     List list = convertDataToJson['data'];
-    final List<Trip> trips = list.map((e) => Trip.fromMap(e)).toList();
-    this.trips = trips;
-    notifyListeners();
+    final List<Trip> _trips = list.map((e) => Trip.fromMap(e)).toList();
+    trips = _trips;
   }
 
-  Future getStops() async {
+  Future<List<Stop>> getStops() async {
     final result = await http.get(
       Uri.parse(stopsUrl),
       headers: {
@@ -45,10 +43,10 @@ class NavigationController with ChangeNotifier {
     List list = convertDataToJson['data'];
     final List<Stop> stops = list.map((e) => Stop.fromMap(e)).toList();
     if (kDebugMode) {
-      print("TRIPs======================${stops.length}");
+      print("STOPS======================${stops.length}");
     }
-    this.stops = stops;
-    notifyListeners();
+
+    return stops;
   }
 
   Future<List<Trip>> getPaginatedTrips(int pageNumber, int pageSize) async {

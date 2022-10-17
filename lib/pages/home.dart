@@ -46,7 +46,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     appData = Provider.of<AppData>(context, listen: false);
     fetchCurrentUser();
-    Geolocator.getPositionStream().listen(userCurrentLocationUpdate);
     super.initState();
   }
 
@@ -58,31 +57,6 @@ class _HomePageState extends State<HomePage> {
     } else {
       ToastDialogue().showToast(accountResponse.message, 1);
     }
-  }
-
-  userCurrentLocationUpdate(Position position) {
-    markersSet
-        .removeWhere((element) => element.markerId == const MarkerId("user"));
-
-    markersSet.add(
-      Marker(
-          markerId: const MarkerId("user"),
-          position: LatLng(position.latitude, position.longitude),
-          anchor: const Offset(0.5, 0.5),
-          draggable: false,
-          flat: true,
-          infoWindow: const InfoWindow(
-              title: "Home Address", snippet: "Your Current Location"),
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)),
-    );
-
-    setState(() {});
-    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
-    CameraPosition cameraPosition =
-        CameraPosition(target: latLngPosition, zoom: 19);
-    newGoogleMapController
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
   @override
@@ -140,7 +114,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Bus stops',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
+            icon: Icon(Icons.flag),
             label: 'Near You',
           ),
         ],
