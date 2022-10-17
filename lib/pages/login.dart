@@ -2,7 +2,6 @@ import 'package:city_navigation/controllers/authController.dart';
 import 'package:city_navigation/models/LoginDTO.dart';
 import 'package:city_navigation/models/LoginResponse.dart';
 import 'package:city_navigation/pages/home.dart';
-import 'package:city_navigation/pages/loading.dart';
 import 'package:city_navigation/utilities/toastDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -127,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const LoadingPage()),
+                                    builder: (context) => const HomePage()),
                               );
                             } else {
                               ToastDialogue()
