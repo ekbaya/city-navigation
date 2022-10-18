@@ -1,6 +1,7 @@
 import 'package:city_navigation/controllers/authController.dart';
 import 'package:city_navigation/models/AccountResponse.dart';
 import 'package:city_navigation/models/user.dart';
+import 'package:city_navigation/pages/login.dart';
 import 'package:city_navigation/pages/welcome.dart';
 import 'package:city_navigation/utilities/toastDialog.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,15 @@ class _AccountPageState extends State<AccountPage> {
       });
     } else {
       ToastDialogue().showToast(accountResponse.message, 1);
+      //Direct User to welcome page
+      // ignore: use_build_context_synchronously
+      Navigator.pushAndRemoveUntil<dynamic>(
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => const LoginPage(),
+        ),
+        (route) => false,
+      );
     }
   }
 

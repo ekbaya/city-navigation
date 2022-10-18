@@ -36,10 +36,11 @@ class _NearByStagesPageState extends State<NearByStagesPage> {
     for (var stop in stops) {
       //1. Compute distance
       double distance = Geolocator.distanceBetween(
-          widget.currentUerPosition.latitude,
-          widget.currentUerPosition.longitude,
-          double.parse(stop.stop_lat),
-          double.parse(stop.stop_lon));
+        widget.currentUerPosition.latitude,
+        widget.currentUerPosition.longitude,
+        double.parse(stop.stop_lat),
+        double.parse(stop.stop_lon),
+      );
       if (distance <= 1000) {
         //3. Select the distances that are less tha 1km from the user
         stopsWithDistance.add(StopWithDistance(
