@@ -10,4 +10,4 @@ const String accountUrl = "$baseUrl/user/account";
 const String searchTripsPagesUrl = "$baseUrl/navigation/search-trips";
 const String searchStopsPagesUrl = "$baseUrl/navigation/search-stops";
 
-String mapKey = "AIzaSyBGORjYyKEgXaFYcxzx1482WLlsVGHo9x0";
+String mapKey = "AIzaSyBDOjOJB4-uVM2YssqKA0KNOwv8WSRxBd4";
