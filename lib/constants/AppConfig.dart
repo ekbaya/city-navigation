@@ -1,3 +1,4 @@
+// ignore: file_names
 const String baseUrl = "https://dry-anchorage-34806.herokuapp.com/v1/api";
 const String tripsUrl = "$baseUrl/navigation/trips";
 const String stopsUrl = "$baseUrl/navigation/stops";
@@ -11,3 +12,6 @@ const String searchTripsPagesUrl = "$baseUrl/navigation/search-trips";
 const String searchStopsPagesUrl = "$baseUrl/navigation/search-stops";
 
 String mapKey = "AIzaSyBDOjOJB4-uVM2YssqKA0KNOwv8WSRxBd4";
+
+
+//some comments
