@@ -5,7 +5,6 @@ import 'package:city_navigation/models/AccountResponse.dart';
 import 'package:city_navigation/pages/bus_stops.dart';
 import 'package:city_navigation/pages/login.dart';
 import 'package:city_navigation/pages/nearby_stages.dart';
-import 'package:city_navigation/pages/welcome.dart';
 import 'package:city_navigation/utilities/toastDialog.dart';
 import 'package:city_navigation/widgets/mainDrawer.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/AppData.dart';
+import 'location.dart';
 import 'routes.dart';
 
 class HomePage extends StatefulWidget {
@@ -76,7 +76,12 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.indigo),
         title: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LocationPage()),
+            );
+          },
           child: const Text(
             "Where are you going?",
             style: TextStyle(color: Colors.black),
